@@ -5,7 +5,7 @@ variable "name" {
 
 variable "instance_type" {
   type    = string
-  default = "t3a.Large"
+  default = "t3a.large"
 }
 
 # No longer used directly, but safe to keep if env0 expects it.
