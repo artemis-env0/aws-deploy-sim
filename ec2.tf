@@ -17,7 +17,7 @@ module "acme-ec2" {
       volume_type           = "gp3"
       volume_size           = var.data_volume_size
       delete_on_termination = true
-      encrypted             = true
+      encrypted             = false
     }
   ]
 
