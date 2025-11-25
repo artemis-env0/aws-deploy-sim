@@ -7,12 +7,12 @@ module "acme-ec2" {
   ami           = data.aws_ami.ubuntu.id
   instance_type = var.instance_type
 
-  # AZ is implied by these subnets; no availability_zone arg needed
-  subnet_ids = data.aws_subnet_ids.selected.ids
+  # use the ids from aws_subnets, not aws_subnet_ids
+  subnet_ids = data.aws_subnets.selected.ids
 
   associate_public_ip_address = true
 
-  # Make the ROOT disk use your desired size instead of default 8 GiB
+  # make the **root** volume the size you want
   root_block_device = [
     {
       volume_type           = "gp3"
@@ -45,8 +45,11 @@ data "aws_vpc" "selected" {
   id = var.vpc_id
 }
 
-data "aws_subnet_ids" "selected" {
-  vpc_id = data.aws_vpc.selected.id
+data "aws_subnets" "selected" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.selected.id]
+  }
 }
 
 /* If you ONLY want the bigger root disk, remove or comment these out:
