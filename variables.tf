@@ -1,25 +1,25 @@
 variable "name" {
   type    = string
-  default = "env0-acme-ec2-simetra"
+  default = "env0-acme-simetra-ec2"
 }
 
 variable "instance_type" {
   type    = string
-  default = "t3a.small"
+  default = "t3a.Large"
+}
+
+# No longer used directly, but safe to keep if env0 expects it.
+variable "az" {
+  type    = string
+  default = "us-west-2b"
 }
 
 variable "vpc_id" {
   type = string
 }
 
-variable "availability_zone" {
-  description = "The specific Availability Zone (e.g., us-west-2a) to launch the EC2 instance in."
-  type        = string
-}
-
-# NEW > Artem [Below] : Data volume size (in GiB) for the extra EBS volume
 variable "data_volume_size" {
-  description = "Size of the additional EBS data volume in GiB."
+  description = "Size of the root EBS volume in GiB."
   type        = number
-  default     = 12
+  default     = 14
 }
