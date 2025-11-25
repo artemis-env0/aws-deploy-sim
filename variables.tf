@@ -1,6 +1,6 @@
 variable "name" {
   type    = string
-  default = "env0-acme-ec2-CPRSMITH-TEST"
+  default = "env0-acme-ec2-simetra"
 }
 
 variable "instance_type" {
