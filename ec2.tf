@@ -16,7 +16,7 @@ module "acme-ec2" {
   root_block_device = [
     {
       volume_type           = "gp3"
-      volume_size           = var.data_volume_size  # <- 12 GiB (or whatever you set)
+      volume_size           = var.data_volume_size
       delete_on_termination = true
       encrypted             = true
     }
