@@ -11,7 +11,7 @@ variable "instance_type" {
 # No longer used directly, but safe to keep if env0 expects it.
 variable "az" {
   type    = string
-  default = "us-west-2b"
+  default = "us-west-2a"
 }
 
 variable "vpc_id" {
