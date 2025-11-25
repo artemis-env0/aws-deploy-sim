@@ -4,20 +4,21 @@ module "acme-ec2" {
 
   name = var.name
 
-  ami           = data.aws_ami.ubuntu.id
-  instance_type = var.instance_type
+  ami               = data.aws_ami.ubuntu.id
+  instance_type     = var.instance_type
+  availability_zone = var.az
 
-  subnet_id                   = data.aws_subnet.selected_az.id
+  subnet_ids = data.aws_subnet_ids.selected.ids
+
   associate_public_ip_address = true
 
-  # NEW: Extra EBS data volume with size from variable
-  ebs_block_device = [
+  # NEW: make the root volume use your desired size
+  root_block_device = [
     {
-      device_name           = "/dev/sdf"
       volume_type           = "gp3"
-      volume_size           = var.data_volume_size
+      volume_size           = var.data_volume_size  # <- 12 GiB (or whatever you set)
       delete_on_termination = true
-      encrypted             = false
+      encrypted             = true
     }
   ]
 
@@ -44,14 +45,25 @@ data "aws_vpc" "selected" {
   id = var.vpc_id
 }
 
-# Data source to select a single subnet based on VPC, Availability Zone, and Tag
-data "aws_subnet" "selected_az" {
-  vpc_id            = data.aws_vpc.selected.id
-  availability_zone = var.availability_zone
+data "aws_subnet_ids" "selected" {
+  vpc_id = data.aws_vpc.selected.id
+}
 
-  # Filter by tag to ensure we select the correct type of subnet (e.g., Public)
-  filter {
-    name   = "tag:Name"
-    values = ["*public*"]
+/* REMOVE these if you only want one disk:
+
+resource "aws_ebs_volume" "data" {
+  size      = var.data_volume_size
+  type      = "gp3"
+  encrypted = true
+
+  tags = {
+    Name = "${var.name}-data"
   }
 }
+
+resource "aws_volume_attachment" "data" {
+  device_name = "/dev/sdf"
+  volume_id   = aws_ebs_volume.data.id
+  instance_id = module.acme-ec2.id
+}
+*/
