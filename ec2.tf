@@ -1,35 +1,8 @@
-module "acme-ec2" {
-  source  = "terraform-aws-modules/ec2-instance/aws"
-  version = "~> 2.0"
+########################################################################
+# EC2 instance + volume
+########################################################################
 
-  name = var.name
-
-  ami           = data.aws_ami.ubuntu.id
-  instance_type = var.instance_type
-
-  # use the ids from aws_subnets, not aws_subnet_ids
-  subnet_ids = data.aws_subnets.selected.ids
-
-  associate_public_ip_address = true
-
-  # make the **root** volume the size you want
-  root_block_device = [
-    {
-      volume_type           = "gp3"
-      volume_size           = var.data_volume_size
-      delete_on_termination = true
-      encrypted             = true
-    }
-  ]
-
-  tags = {
-    Terraform = "true"
-    Owner     = "acme demo org"
-    Test      = "new taga"
-    Demo      = "May 20"
-  }
-}
-
+# Find Ubuntu AMI
 data "aws_ami" "ubuntu" {
   most_recent = true
 
@@ -41,10 +14,12 @@ data "aws_ami" "ubuntu" {
   owners = ["099720109477"]
 }
 
+# VPC we’re targeting
 data "aws_vpc" "selected" {
   id = var.vpc_id
 }
 
+# All subnets in that VPC (AWS provider v6-compatible data source)
 data "aws_subnets" "selected" {
   filter {
     name   = "vpc-id"
@@ -52,21 +27,29 @@ data "aws_subnets" "selected" {
   }
 }
 
-/* If you ONLY want the bigger root disk, remove or comment these out:
+# Single EC2 instance (no module)
+resource "aws_instance" "acme" {
+  ami           = data.aws_ami.ubuntu.id
+  instance_type = var.instance_type
 
-resource "aws_ebs_volume" "data" {
-  size      = var.data_volume_size
-  type      = "gp3"
-  encrypted = true
+  # Just pick the first subnet in the VPC.
+  # (If you want to constrain to public subnets, we can add a tag filter later.)
+  subnet_id                   = data.aws_subnets.selected.ids[0]
+  associate_public_ip_address = true
+
+  # IMPORTANT: root volume size is now driven by var.data_volume_size
+  root_block_device {
+    volume_type           = "gp3"
+    volume_size           = var.data_volume_size 
+    delete_on_termination = true
+    encrypted             = true
+  }
 
   tags = {
-    Name = "${var.name}-data"
+    Name      = var.name
+    Terraform = "true"
+    Owner     = "acme demo org"
+    Test      = "new taga"
+    Demo      = "May 20"
   }
 }
-
-resource "aws_volume_attachment" "data" {
-  device_name = "/dev/sdf"
-  volume_id   = aws_ebs_volume.data.id
-  instance_id = module.acme-ec2.id
-}
-*/
