@@ -1,11 +1,11 @@
 output "instances" {
-  value = module.acme-ec2.id
+  value = aws_instance.acme.id
 }
 
 output "public_ip" {
-  value = module.acme-ec2.public_ip
+  value = aws_instance.acme.public_ip
 }
 
 output "private_ip" {
-  value = module.acme-ec2.private_ip
+  value = aws_instance.acme.private_ip
 }
