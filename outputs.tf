@@ -1,5 +1,5 @@
 output "instances" {
-  description = "IDs of the EC2 instances"
+  description = "ID of the EC2 instance"
   value       = module.acme-ec2.id
 }
 
@@ -13,8 +13,7 @@ output "private_ip" {
   value       = module.acme-ec2.private_ip
 }
 
-# NEW > [Artem Was Here > See Below]: Show attached EBS block devices (includes the new data volume)
-output "data_volume_block_devices" {
-  description = "EBS block devices attached to the instance, including the extra data volume."
-  value       = module.acme-ec2.ebs_block_device
+output "data_ebs_volumes" {
+  description = "Map of additional EBS volumes created and attached to the instance."
+  value       = module.acme-ec2.ebs_volumes
 }
