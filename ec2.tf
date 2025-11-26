@@ -39,7 +39,7 @@ resource "aws_instance" "acme" {
 
   # IMPORTANT: root volume size is now driven by var.data_volume_size
   root_block_device {
-    volume_type           = "gp3"
+    volume_type           = var.data_volume_type
     volume_size           = var.data_volume_size 
     delete_on_termination = true
     encrypted             = true
