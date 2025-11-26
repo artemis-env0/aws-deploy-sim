@@ -13,7 +13,6 @@ variable "data_volume_type" {
   default = "gp3"
 }
 
-# No longer used directly, but safe to keep if env0 expects it.
 variable "az" {
   type    = string
   default = "us-west-2a"
